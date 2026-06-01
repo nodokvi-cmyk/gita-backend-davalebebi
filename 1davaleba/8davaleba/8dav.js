@@ -91,10 +91,12 @@ const carContainer = document.querySelector("#carInfo")
 
 
 carInput.addEventListener("input", debounce ((e) => {
-    if(e.target.value >= 0 && e.target.value <= 1000){
+    if(e.target.value === "" || e.target.value === "0"){
+        carContainer.innerHTML = ""
+    }else if(e.target.value >= 1 && e.target.value <= 1000){
         getCarInfo(e.target.value)
     }else{
-        alert("There are 1000 cars in total, input must be equal to or less 1000")
+        alert("There are 1000 cars in total. Input must be between 1 and 1000.")
     }
 }, 300))
 
