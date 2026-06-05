@@ -26,7 +26,7 @@ async function phoneContacts(){
         const data = await fs.readFile("contacts.json")
         const parseData = data.length > 0 ? JSON.parse(data) : []
         const updatedContactList = parseData.filter((contact) => contact.number !== number)
-        await fs.writeFile("contacts.json", JSON.stringify(updatedContactList))
+        await fs.writeFile("contacts.json", JSON.stringify(updatedContactList, null, 2))
     }
     if (operation === show){
         const data = await fs.readFile("contacts.json", "utf8")
