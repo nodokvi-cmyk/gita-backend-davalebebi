@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "name": "Khvicha Kvaratskhelia",
+        "nation": "Georgia",
+        "position": "Forward",
+        "club": "PSG"
+    },
+    {
+        "id": 2,
+        "name": "Georges Mikautadze",
+        "nation": "Georgia",
+        "position": "Forward",
+        "club": "Villarreal"
+    },
+    {
+        "id": 3,
+        "name": "Jamal Musiala",
+        "nation": "Germany",
+        "position": "Midfielder",
+        "club": "Bayern Munich"
+    },
+    {
+        "id": 4,
+        "name": "Florian Wirtz",
+        "nation": "Germany",
+        "position": "Midfielder",
+        "club": "Liverpool"
+    },
+    {
+        "id": 5,
+        "name": "Declan Rice",
+        "nation": "England",
+        "position": "Midfielder",
+        "club": "Arsenal"
+    },
+    {
+        "id": 6,
+        "name": "Lamine Yamal",
+        "nation": "Spain",
+        "position": "Forward",
+        "club": "FC Barcelona"
+    }
+]
