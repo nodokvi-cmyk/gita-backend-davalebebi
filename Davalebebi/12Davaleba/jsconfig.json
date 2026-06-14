@@ -1,0 +1,14 @@
+// {
+//   "compilerOptions": {
+//     "module": "commonjs",
+//     "target": "es2022"
+//   }
+// }
+
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "es2022"
+  }
+}

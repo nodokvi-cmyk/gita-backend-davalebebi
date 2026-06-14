@@ -1,0 +1,24 @@
+{
+  "name": "12davaleba",
+  "version": "1.0.0",
+  "description": "",
+  "main": "todo.js",
+  "bin": {
+    "todo-cli": "todo.js",
+    "weather-cli": "weather.js"
+  },
+  "scripts": {
+    "weatherdev": "node --watch weather.js",
+    "dev": "node --watch todo.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.18.0",
+    "chalk": "^5.6.2",
+    "commander": "^15.0.0"
+  }
+}
