@@ -1,0 +1,20 @@
+{
+  "name": "1shualeduri",
+  "version": "1.0.0",
+  "description": "",
+  "main": "expense.js",
+  "bin": {
+    "expense-cli": "expense.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "commander": "^15.0.0"
+  }
+}
