@@ -145,12 +145,11 @@ program
         }
         
         let isCorrectCategory = false
-        let isCorrectPrice = true
+        let isCorrectPrice = false
 
         if (opts.price){
             if(isNaN(numberPrice) || numberPrice < 10){
                 console.log(chalk.red("Price must be a number and not less than 10"))
-                isCorrectPrice = false
             } else{
                 expenseToUpdate.price = numberPrice
                 isCorrectPrice = true
