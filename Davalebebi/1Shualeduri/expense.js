@@ -97,16 +97,17 @@ program
         if(expenseList.length < 1){
             return console.log(chalk.red("The list is empty"))
         }
+        
         let dateFiltered = expenseList.filter((expense) => expense.createdAt.startsWith(date))
+        if(dateFiltered.length < 1){
+            console.log(`${chalk.red("No expenses found for date:")} ${chalk.underline.red(date)}`)
+            return
+        }
         
         const page = Math.max(Number(opts.page) || 1, 1)
         const take = Math.max(Math.min(Number(opts.take) || 10, 10), 1)
         const totalPages = Math.ceil(dateFiltered.length / take || 1)
 
-        if(dateFiltered.length < 1){
-            console.log(`${chalk.red("No expenses found for date:")} ${chalk.underline.red(date)}`)
-            return
-        }
 
         if(page > totalPages){
             console.log(`There are only ${chalk.blue(totalPages)} pages`)
