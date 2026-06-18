@@ -52,6 +52,9 @@ program
     .option("-t --take <take>", "desired page", 10)
     .action( async (opts) => {
         const expenseList = await readFile("expenses.json", true)
+        if(expenseList.length < 1){
+            return console.log(chalk.red("The list is empty"))
+        }
         let result = expenseList
 
         if(opts.category){
@@ -69,8 +72,8 @@ program
             return
         }
 
-        const page = Math.max(Number(opts.page), 1)
-        const take = Math.max(Math.min(Number(opts.take), 10), 1)
+        const page = Math.max(Number(opts.page) || 1, 1)
+        const take = Math.max(Math.min(Number(opts.take) || 10, 10), 1)
         const totalPages = Math.ceil(result.length / take || 1)
 
         if(page > totalPages){
@@ -86,15 +89,18 @@ program
 program
     .command("search")
     .description("search expenses by date")
-    .argument("<date>", "desired date, format:YY/MM/DD")
+    .argument("<date>", "desired date, format:YYYY/MM/DD")
     .option("-p --page <page>", "desired page", 1)
     .option("-t --take <take>", "desired page", 10)
     .action(async (date, opts) => {
         const expenseList = await readFile("expenses.json", true)
+        if(expenseList.length < 1){
+            return console.log(chalk.red("The list is empty"))
+        }
         let dateFiltered = expenseList.filter((expense) => expense.createdAt.startsWith(date))
         
-        const page = Math.max(Number(opts.page), 1)
-        const take = Math.max(Math.min(Number(opts.take), 10), 1)
+        const page = Math.max(Number(opts.page) || 1, 1)
+        const take = Math.max(Math.min(Number(opts.take) || 10, 10), 1)
         const totalPages = Math.ceil(dateFiltered.length / take || 1)
 
         if(dateFiltered.length < 1){
@@ -122,6 +128,9 @@ program
     .option("-c --category <newCategory>", "corrected category")
     .action( async (expenseId, opts) => {
         const expenseList = await readFile("expenses.json", true)
+        if(expenseList.length < 1){
+            return console.log(chalk.red("The list is empty"))
+        }
         const expenseToUpdate = expenseList.find((expense) => expense.id === Number(expenseId))
         const numberPrice = Number(opts.price)
 
@@ -135,26 +144,33 @@ program
             return
         }
         
-        let isChanged = false
+        let isCorrectCategory = false
+        let isCorrectPrice = true
+
         if (opts.price){
-        if(isNaN(numberPrice) || numberPrice < 10){
-            console.log(chalk.red("Price must be a number and not less than 10"))
-        } else{
-            expenseToUpdate.price = numberPrice
-            isChanged = true
-        }
+            if(isNaN(numberPrice) || numberPrice < 10){
+                console.log(chalk.red("Price must be a number and not less than 10"))
+                isCorrectPrice = false
+            } else{
+                expenseToUpdate.price = numberPrice
+                isCorrectPrice = true
+            }
         }
 
         if (opts.category){
             expenseToUpdate.category = opts.category
-            isChanged = true
+            isCorrectCategory = true
         }
-
-        if(isChanged){
+        
+        if(isCorrectCategory === true && isCorrectPrice === false){
+            expenseToUpdate.lastUpdated = new Date().toISOString()
+            await writeFile("expenses.json", expenseList)
+            console.log(chalk.green("Expense category updated successfully"))
+        }else if(isCorrectCategory === true || isCorrectPrice === true){
             expenseToUpdate.lastUpdated = new Date().toISOString()
             await writeFile("expenses.json", expenseList)
             console.log(chalk.green("Expense updated successfully"))
-        } else{
+        }else{
             console.log(chalk.red("No changes made"))
         }
     })
@@ -165,8 +181,11 @@ program
     .argument("<expenseId>")
     .action(async (expenseId) => {
         const expenseList = await readFile("expenses.json", true)
-        const expenseToDelete = expenseList.findIndex((expense) => expense.id === Number(expenseId))
+        if(expenseList.length < 1){
+            return console.log(chalk.red("The list is empty"))
+        }
 
+        const expenseToDelete = expenseList.findIndex((expense) => expense.id === Number(expenseId))
         if(expenseToDelete === -1){
             console.log(chalk.red("Expense not found"))
             return
@@ -181,18 +200,49 @@ program
 program
     .command("sum")
     .description("calculate prices of all expenses")
-    .option("-d --date <date>", "to calculate particular date's expenses, format:YY/MM/DD")
+    .option("-d --date <date>", "to calculate particular date's expenses, format:YYYY/MM/DD")
     .action(async (opts) => {
         const expenseList = await readFile("expenses.json", true)
+        if(expenseList.length < 1){
+            return console.log(chalk.red("The list is empty"))
+        }
 
         if(!opts.date){
             const totalSum = expenseList.reduce((tot, curr) => tot + curr.price, 0)
             console.log(`Total Sum: ${chalk.green.bold(totalSum)}`)
         } else {
             const dateFiltered = expenseList.filter((expense) => expense.createdAt.startsWith(opts.date))
-            const dateSum = dateFiltered.reduce((tot, curr) => tot + curr.price, 0)
-            console.log(`Sum of ${opts.date}: ${chalk.green.bold(dateSum)}`)
+            if(dateFiltered.length < 1){
+                return console.log(`${chalk.red("No expenses found for date:")} ${chalk.underline.red(opts.date)}`)
+            } else{
+                const dateSum = dateFiltered.reduce((tot, curr) => tot + curr.price, 0)
+                console.log(`Sum of ${opts.date}: ${chalk.green.bold(dateSum)}`)
+            }
         }
+    })
+
+program
+    .command("get")
+    .description("get expense by id")
+    .argument("<expenseId>", "desired expense id")
+    .action( async (expenseId) => {
+        const expenseList = await readFile("expenses.json", true)
+        if(expenseList.length < 1){
+            return console.log(chalk.red("The list is empty"))
+        }
+
+        const targetedExpense = expenseList.find((expense) => expense.id === Number(expenseId))
+        const lastId = expenseList[expenseList.length - 1]?.id || 0
+
+        if(!targetedExpense){
+            return console.log(`${chalk.red("Invalid ID -")} The highest number of id in the list is ${chalk.blue(lastId)}`)
+        }
+        const desiredExpense = {
+            id: targetedExpense.id,
+            category: targetedExpense.category,
+            price: targetedExpense.price
+        }
+        console.log(desiredExpense)
     })
 
 
