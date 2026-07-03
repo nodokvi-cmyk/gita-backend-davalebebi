@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken")
 const userModel = require("../users/user.model.js")
 const bcrypt = require("bcrypt")
 
-exports.signUp = async ({fullName, email, password, birthDate}) => {
+exports.signUp = async ({fullName, age, email, password, birthDate}) => {
     const existingUser = await userModel.findOne({email})
     if(existingUser){
         return "ALREADY_EXISTS"
@@ -12,6 +12,7 @@ exports.signUp = async ({fullName, email, password, birthDate}) => {
 
     await userModel.create({
         fullName,
+        age,
         email,
         password: hashedPassword,
         birthDate

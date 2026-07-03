@@ -10,7 +10,7 @@ const isAuthMiddleware = require("../middlewares/is-auth.middleware.js");
 authRouter.post("/sign-up", validateMiddleware(signUpDto), async (req, res) => {
     const {fullName, age, email, password, birthDate} = req.body
 
-    const existingUser = await authService.signUp({fullName, email, password, birthDate})
+    const existingUser = await authService.signUp({fullName, age, email, password, birthDate})
     if(existingUser === "ALREADY_EXISTS"){
         return res.status(400).json({message: "User with this email already registered"})
     }

@@ -3,6 +3,8 @@ const userService = require("./user.service.js");
 const isValidMongoIdMiddleware = require("../middlewares/is-valid-mongo-id.middleware.js");
 const roleMiddleware = require("../middlewares/role.middleware.js");
 const isAuthMiddleware = require("../middlewares/is-auth.middleware.js");
+const validateMiddleware = require("../middlewares/validate.middleware.js");
+const updateUserDto = require("./dto/updateUser.dto.js");
 
 const userRouter = new Router()
 
@@ -11,7 +13,7 @@ userRouter.get("/", async (req, res) => {
     res.json(users)
 })
 
-userRouter.get("/:userId", isValidMongoIdMiddleware, async (req, res) => {
+userRouter.get("/:userId", isValidMongoIdMiddleware("userId"), async (req, res) => {
     const user = await userService.getUserById(req.params.userId)
     if(!user){
         return res.status(404).json({message: "User not found"})
@@ -19,7 +21,7 @@ userRouter.get("/:userId", isValidMongoIdMiddleware, async (req, res) => {
     res.json(user)
 })
 
-userRouter.delete("/:userId", isValidMongoIdMiddleware, isAuthMiddleware, roleMiddleware(["admin"]), async (req, res) => {
+userRouter.delete("/:userId", isValidMongoIdMiddleware("userId"), isAuthMiddleware, roleMiddleware(["admin"]), async (req, res) => {
     const deletedUser = await userService.deleteUserById(req.params.userId)
     if(!deletedUser){
         return res.status(404).json({message: "User not found"})
@@ -27,10 +29,7 @@ userRouter.delete("/:userId", isValidMongoIdMiddleware, isAuthMiddleware, roleMi
     res.json({deleteSuccess: true, deletedUser: deletedUser})
 })
 
-userRouter.put("/:userId", isValidMongoIdMiddleware, isAuthMiddleware, roleMiddleware([]), async (req, res) => {
-    if(req.body.role){
-        delete req.body.role
-    }
+userRouter.put("/:userId", isValidMongoIdMiddleware("userId"), isAuthMiddleware, roleMiddleware([]), validateMiddleware(updateUserDto), async (req, res) => {
     const updatedUser = await userService.updateUserById(req.params.userId, req.body)
     if(!updatedUser){
         return res.status(404).json({message: "User not found"})

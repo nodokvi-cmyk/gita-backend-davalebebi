@@ -42,7 +42,7 @@ exports.deleteUserById = async (id) => {
 
     await commentModel.deleteMany({targettedBlog: { $in: deletedUser.blogs }})
     await blogModel.deleteMany({author: id})
-    await commentModel.updateMany({author: id}, {$set: {author: null}})
+    await commentModel.updateMany({author: id}, {$set: {author: "6a4811792ebcc8b5a55f2e56"}})
     return deletedUser
 }
 
