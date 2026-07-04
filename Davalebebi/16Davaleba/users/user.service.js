@@ -1,6 +1,7 @@
 const blogModel = require("../blogs/blog.model.js")
 const commentModel = require("../comments/comment.model.js")
 const userModel = require("./user.model.js")
+const bcrypt = require("bcrypt")
 
 exports.getAllUsers = async (query) => {
     const filter = {}
@@ -50,6 +51,10 @@ exports.updateUserById = async (id, body) => {
     const existingUser = await userModel.findOne({email: body.email})
     if(existingUser){
         return "ALREADY_EXISTS"
+    }
+
+    if(body.password){
+        body.password = await bcrypt.hash(body.password, 10)
     }
 
     const updatedUser = await userModel.findByIdAndUpdate(id, {

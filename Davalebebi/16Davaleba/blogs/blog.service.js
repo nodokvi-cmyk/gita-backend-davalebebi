@@ -55,11 +55,18 @@ exports.createBlog = async (body, userId) => {
 }
 
 exports.deleteBlogById = async (id) => {
+    const blogComments = await commentModel.find({targettedBlog: id})
+    const commentIds = blogComments.map((comment) => comment._id)
     const deletedBlog = await blogModel.findByIdAndDelete(id)
     
     await userModel.findByIdAndUpdate(deletedBlog.author, {
         $pull: { blogs: id }
     })
+
+    await userModel.updateMany(
+        {comments:{ $in: commentIds}},
+        {$pull: {comments: {$in: commentIds}}}
+    )
 
     await commentModel.deleteMany({targettedBlog: id})
     return deletedBlog
