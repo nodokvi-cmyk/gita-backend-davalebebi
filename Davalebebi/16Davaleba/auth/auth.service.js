@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken")
 const userModel = require("../users/user.model.js")
 const bcrypt = require("bcrypt")
+require("dotenv").config()
 
 exports.signUp = async ({fullName, age, email, password, birthDate}) => {
     const existingUser = await userModel.findOne({email})
