@@ -24,7 +24,17 @@ exports.getAllBlogs = async (query) => {
 }
 
 exports.getBlogById = async (id) => {
-    const blog = await blogModel.findById(id).populate("author", "fullName email")
+    const blog = await blogModel.findById(id)
+    .populate("author", "fullName email")
+    .populate({
+        path: "comments",
+        select: "comment author",
+        populate: {
+            path: "author",
+            select: "fullName -_id"
+        }
+    })
+
     if (!blog){
         return null
     }
