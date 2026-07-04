@@ -3,7 +3,7 @@ const blogModel = require("../blogs/blog.model.js")
 const commentModel = require("./comment.model.js")
 
 exports.getAllComments = async (blogId) => {
-    const comments = await commentModel.find({blog: blogId}).populate("author", "fullName email")
+    const comments = await commentModel.find({targettedBlog: blogId}).populate("author", "fullName email")
     return comments
 }
 
