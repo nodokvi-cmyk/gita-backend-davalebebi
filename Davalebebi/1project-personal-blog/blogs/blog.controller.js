@@ -7,6 +7,7 @@ const validateMiddleware = require("../middlewares/validate.middleware.js");
 const { createBlogDto, updateBlogDto } = require("./dto/blog.dto.js");
 const resourcePermissionMiddleware = require("../middlewares/resource-permission.middleware.js");
 const blogModel = require("./blog.model.js");
+const isAdminMiddleware = require("../middlewares/is-admin.middleware.js");
 
 const blogRouter = new Router()
 
@@ -25,7 +26,7 @@ blogRouter.get("/:blogId", isValidMongoIdMiddleware("blogId"), async (req, res) 
     res.json(blog)
 })
 
-blogRouter.post("/", isAuthMiddleware, validateMiddleware(createBlogDto), async (req, res) => {  
+blogRouter.post("/", isAuthMiddleware, isAdminMiddleware, validateMiddleware(createBlogDto), async (req, res) => {  
     const newBlog = await blogService.createBlog(req.body, req.userId)
     res.status(201).json({created: true, data: newBlog})
 })
