@@ -2,6 +2,7 @@ const blogModel = require("../blogs/blog.model.js")
 const commentModel = require("../comments/comment.model.js")
 const userModel = require("./user.model.js")
 const bcrypt = require("bcrypt")
+require("dotenv").config()
 
 exports.getAllUsers = async (query) => {
     const filter = {}
@@ -43,7 +44,7 @@ exports.deleteUserById = async (id) => {
 
     await commentModel.deleteMany({targettedBlog: { $in: deletedUser.blogs }})
     await blogModel.deleteMany({author: id})
-    await commentModel.updateMany({author: id}, {$set: {author: "6a4811792ebcc8b5a55f2e56"}})
+    await commentModel.updateMany({author: id}, {$set: {author: process.env.SYSTEM_DELETED_USER_ID}})
     return deletedUser
 }
 
