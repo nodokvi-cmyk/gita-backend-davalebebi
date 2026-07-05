@@ -7,6 +7,7 @@ const authRouter = require("./auth/auth.controller.js")
 const blogRouter = require("./blogs/blog.controller.js")
 const commentRouter = require("./comments/comment.controller.js")
 const homeRouter = require("./home/home.controller.js")
+const newsLetterRouter = require("./newsletter/newsletter.controller.js")
 
 app.use(express.json())
 
@@ -15,6 +16,7 @@ app.use("/auth", authRouter)
 app.use("/blogs", blogRouter)
 
 app.use("/home", homeRouter)
+app.use("/newsletter", newsLetterRouter)
 
 app.get("/", (req, res) => {
     res.send(`<h1 style="color: red">Hello World</h1>`)

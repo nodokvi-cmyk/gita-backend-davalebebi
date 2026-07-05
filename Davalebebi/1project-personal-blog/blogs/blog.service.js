@@ -19,8 +19,25 @@ exports.getAllBlogs = async (query) => {
             $options: "i"
         }
     }
-    const blogs = await blogModel.find(filter).populate("author", "fullName email")
-    return blogs
+
+    const page = Math.max(Number(query.page) || 1, 1)
+    const take = Math.max(Math.min(Number(query.take) || 10, 10), 1)
+    const skip = (page - 1) * take
+
+    const blogs = await blogModel.find(filter)
+    .populate("author", "fullName email")
+    .sort({createdAt: -1})
+    .skip(skip)
+    .limit(take)
+
+    const allBlogs = await blogModel.countDocuments(filter)
+
+    return {
+        blogs,
+        currentPage: page,
+        totalPages: Math.ceil(allBlogs / take),
+        allBlogs
+    }
 }
 
 exports.getBlogById = async (id) => {
@@ -28,7 +45,8 @@ exports.getBlogById = async (id) => {
     .populate("author", "fullName email")
     .populate({
         path: "comments",
-        select: "comment author",
+        select: "comment author createdAt",
+        options: {sort: {createdAt: -1}},
         populate: {
             path: "author",
             select: "fullName -_id"
