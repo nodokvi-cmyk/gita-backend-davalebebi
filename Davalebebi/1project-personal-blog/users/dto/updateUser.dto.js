@@ -11,13 +11,14 @@ const updateUserDto = z.object({
     }, {
         message: "Fullname must include first and last names"
     }),
-    age: z.number(),
+    age: z.coerce.number(),
     email: z.email(),
     password: z.string().min(8, "Password must be at least 8 characters long")
     .refine((passwordInput) => /^(?=.*[a-zA-Z])(?=.*\d)/.test(passwordInput), {
         message: "Password must include at least 1 letter and 1 number"
     }),
-    birthDate: z.string().date({message: "Format - YYYY-MM-DD"})
+    birthDate: z.string().date({message: "Format - YYYY-MM-DD"}),
+    deleteProfileAvatar: z.union([z.boolean(), z.string()])
 }).partial()
 
 module.exports = updateUserDto

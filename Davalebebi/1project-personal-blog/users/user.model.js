@@ -1,6 +1,16 @@
 const { default: mongoose } = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+    profileAvatar: {
+        imageUrl: {
+            type: String,
+            default: null
+        },
+        imagePublicId: {
+            type: String,
+            default: null
+        }
+    },
     role: {
         type: String,
         enum: ["viewer", "admin"],

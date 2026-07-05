@@ -5,6 +5,7 @@ const roleMiddleware = require("../middlewares/role.middleware.js");
 const isAuthMiddleware = require("../middlewares/is-auth.middleware.js");
 const validateMiddleware = require("../middlewares/validate.middleware.js");
 const updateUserDto = require("./dto/updateUser.dto.js");
+const upload = require("../middlewares/upload.middleware.js");
 
 const userRouter = new Router()
 
@@ -29,8 +30,8 @@ userRouter.delete("/:userId", isValidMongoIdMiddleware("userId"), isAuthMiddlewa
     res.json({deleteSuccess: true, deletedUser: deletedUser})
 })
 
-userRouter.put("/:userId", isValidMongoIdMiddleware("userId"), isAuthMiddleware, roleMiddleware([]), validateMiddleware(updateUserDto), async (req, res) => {
-    const updatedUser = await userService.updateUserById(req.params.userId, req.body)
+userRouter.put("/:userId", isValidMongoIdMiddleware("userId"), isAuthMiddleware, roleMiddleware([]), upload.single("profileAvatar"), validateMiddleware(updateUserDto), async (req, res) => {
+    const updatedUser = await userService.updateUserById(req.params.userId, req.body, req.file)
     if(!updatedUser){
         return res.status(404).json({message: "User not found"})
     }
