@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Expense</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <%- include("../partials/header.ejs") %>
+    <h1>Create Expense</h1>
+    <button class="button"
+    onclick="window.location.href='/'"
+    >
+    Back to Home Page
+    </button>
+
+    <form action="/api/expenses" method="post">
+        <input required placeholder="Enter Category" type="text" name="category">
+        <input required placeholder="Enter Price" type="number" name="price">
+
+        <button type="submit">Create</button>
+    </form>
+    
+</body>
+</html>

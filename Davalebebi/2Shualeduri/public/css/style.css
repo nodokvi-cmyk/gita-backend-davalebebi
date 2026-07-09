@@ -1,0 +1,36 @@
+.title{
+    color: red
+}
+
+.expenseCard{
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid black;
+    width: 400px;
+}
+
+ul{
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+li{
+    list-style-type: none;
+}
+
+li a{
+    color: black;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.paginationContainer{
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.button{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

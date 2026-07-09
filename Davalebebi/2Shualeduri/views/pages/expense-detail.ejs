@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= desiredExpense ? `Expense N${desiredExpense.id} Details` : "Expense Details" %></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <button
+    onclick="window.location.href='/'"
+    >
+    Back to Home Page
+    </button>
+    
+    <% if(!desiredExpense) {%>
+        <h1>Expense not found</h1>
+    <% } else { %>
+        
+        <h1>Expense Details</h1>
+        
+        <div class="expenseCard">
+            
+            <h2>ID: <%= desiredExpense?.id %></h2>
+            <h2>Category: <%= desiredExpense?.category %></h2>
+            <h2>Price: <%= desiredExpense?.price %></h2>
+            <h2>Created At: <%= desiredExpense?.createdAt %></h2>
+            <h2>Last Updated at: <%= desiredExpense?.lastUpdated %></h2>
+            
+        </div>
+        <% }  %>
+
+
+</body>
+</html>

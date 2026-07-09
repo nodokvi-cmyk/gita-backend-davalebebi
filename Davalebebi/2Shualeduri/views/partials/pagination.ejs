@@ -1,0 +1,26 @@
+<div class="paginationContainer">
+        <button
+        onclick="window.location.href='/?page=<%= currentPage - 1 %>&take=<%= take %>&search=<%= search %>'"
+        <%= currentPage === 1 ? "disabled" : "" %>
+        >
+        Previous
+        </button>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <button
+            onclick="window.location.href='/?page=<%= i %>&take=<%= take %>&search=<%= search %>'"
+            <%= i === currentPage ? "disabled" : "" %>
+            >
+            <%= i %>
+            </button>
+        <% } %>
+
+        <button
+        onclick="window.location.href='/?page=<%= currentPage + 1 %>&take=<%= take %>&search=<%= search %>'"
+        <%= currentPage === totalPages ? "disabled" : "" %>
+        >
+        Next
+        </button>
+    </div>
+
+    

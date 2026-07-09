@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <meta name="description" content="<%= metaData %>">
+</head>
+<body>
+    <%- include("../partials/header.ejs") %>
+    <h3><%= name %></h3>
+    <h1>Home Page</h1>
+
+    <button class="button"
+    onclick="window.location.href='/create-expense'"
+    >
+    Create Expense
+    </button>
+
+    <br>
+    <br>
+
+    <h3>I hope debounce technique is much more comfortable</h3>
+    <input placeholder="Search by Category" id="searchInput" type="text" name="category" value="<%= search %>">
+
+    <%- include("../partials/pagination.ejs") %>
+
+    <% expenses.forEach((expense) => { %>
+        <div class="expenseCard">
+            <h2>Category: <%= expense.category %></h2>
+            <h2>Price: <%= expense.price %></h2>
+            <h3>Last Updated: <%= (expense.lastUpdated) %></h3>
+
+            <a href="/expenses/<%= expense.id %>">Show More Details</a>
+            <br>
+            <br>
+            <a href="/expenses/<%= expense.id %>/update">Update Expense</a>
+
+            <form action="/api/expenses/<%= expense.id %>/delete" method="post">
+                <button class="button">Delete</button>
+            </form>
+        </div>
+    <% }) %>
+
+    <script>
+    
+    const searchInput = document.getElementById("searchInput")
+
+    function debounce(callback, ms){
+        let timer
+        return (...args) => {
+            clearTimeout(timer)
+            timer = setTimeout(() => {
+                callback(...args)
+            }, ms)
+        }
+    }
+
+    searchInput.addEventListener("input", debounce((e) => {
+        const query = e.target.value
+        window.location.href = `/?page=1&take=<%= take %>&search=${encodeURIComponent(query)}`
+    }, 350))
+
+    const urlParams = new URLSearchParams(window.location.search)
+
+    if(urlParams.has("search")){
+        searchInput.focus()
+
+        if(searchInput.value){
+            const inputValue = searchInput.value
+            searchInput.value = ""
+            searchInput.value = inputValue
+        }
+    }
+
+    </script>
+</body>
+</html>

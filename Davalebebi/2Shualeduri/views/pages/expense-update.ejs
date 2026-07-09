@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= targettedExpense ? `Expense N${targettedExpense.id}'s Update` : "Update Expense"%></title>
+</head>
+<body>
+    <button class="button"
+    onclick="window.location.href='/'"
+    >
+    Back to Home Page
+    </button>
+
+    <h1>Edit Expense</h1>
+
+    <form action="/api/expenses/<%= targettedExpense.id %>/update" method="post">
+        <input type="text" name="category" value="<%= targettedExpense.category %>">
+        <input type="number" name="price" value="<%= targettedExpense.price %>">
+
+        <button class="button" type="submit">Update Expense</button>
+    </form>
+
+</body>
+</html>
