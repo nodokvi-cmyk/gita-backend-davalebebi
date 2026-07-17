@@ -3,6 +3,7 @@ import productService from "./product.service"
 import isAdminMiddleware from "../middlewares/is-admin.middleware"
 import { productDto, updateProductDto } from "./dto/product.dto"
 import { ProductType } from "./product.model"
+import { ObjectSchema } from "joi"
 
 const productRouter = Router()
 
@@ -15,10 +16,10 @@ enum StatusCodes {
     NOT_FOUND = 404
 }
 
-const validate = (schema: any) => (req: Request, res: Response, next: NextFunction) => {
+const validate = (schema: ObjectSchema) => (req: Request, res: Response, next: NextFunction) => {
     const { error } = schema.validate(req.body);
     if (error) {
-        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.details[0].message });
+        return res.status(StatusCodes.BAD_REQUEST).json({ message: error.details?.[0]?.message });
     }
     next();
 };
