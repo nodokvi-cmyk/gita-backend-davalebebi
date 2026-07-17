@@ -1,0 +1,30 @@
+{
+  "name": "19Davaleba",
+  "version": "1.0.0",
+  "description": "",
+  "main": "19dav.js",
+  "scripts": {
+    "prebuild": "rimraf ./dist",
+    "build": "npx tsc",
+    "start": "node ./dist/19dav.js",
+    "predev": "npm run build",
+    "dev": "concurrently \"tsc -w\" \"node --watch ./dist/19dav.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "joi": "^18.2.3",
+    "mongoose": "^9.7.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/joi": "^17.2.2",
+    "@types/node": "^26.1.1",
+    "concurrently": "^10.0.3",
+    "rimraf": "^6.1.3"
+  }
+}
