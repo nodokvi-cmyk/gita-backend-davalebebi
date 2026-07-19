@@ -1,0 +1,32 @@
+{
+  "name": "20davaleba-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/main.js",
+  "scripts": {
+    "prebuild": "rimraf ./dist",
+    "build": "npx tsc",
+    "start": "node ./dist/main.js",
+    "predev": "npm run build",
+    "dev": "concurrently \"tsc -w\" \"node --watch ./dist/main.js\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.4",
+    "socket.io": "^4.8.3",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.1",
+    "concurrently": "^10.0.3",
+    "rimraf": "^6.1.3"
+  }
+}
