@@ -1,12 +1,18 @@
 import mongoose from "mongoose"
 
-export type QuizType = {
+export type QuestionType = {
     question: string,
-    options: string[]
+    options: string[],
     correctAnswer: number
 }
 
-const quizSchema = new mongoose.Schema<QuizType>({
+export type QuizType = {
+    title: string,
+    category: string,
+    questions: QuestionType[]
+}
+
+const questionSchema = new mongoose.Schema<QuestionType>({
     question: {
         type: String,
         required: true
@@ -19,6 +25,18 @@ const quizSchema = new mongoose.Schema<QuizType>({
         type: Number,
         required: true
     }
+})
+
+const quizSchema = new mongoose.Schema<QuizType>({
+    title: {
+        type: String,
+        required: true
+    },
+    category: {
+        type: String,
+        required: true
+    },
+    questions: [questionSchema]
 })
 
 const quizModel = mongoose.model<QuizType>("quiz", quizSchema)
