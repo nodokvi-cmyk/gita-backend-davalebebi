@@ -4,6 +4,7 @@ export type UserType = {
     _id?: Types.ObjectId,
     fullName: string,
     email: string,
+    score: number,
     createdAt?: Date,
     updatedAt?: Date,
 }
@@ -18,6 +19,11 @@ const userSchema = new mongoose.Schema<UserType>({
         required: true,
         unique: true,
         lowercase: true
+    },
+    score: {
+        type: Number,
+        required: true,
+        default: 0
     }
 }, {timestamps: true})
 
