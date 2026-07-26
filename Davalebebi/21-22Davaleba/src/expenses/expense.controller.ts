@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
 import { ExpenseService } from "./expense.service";
 import { CreateExpenseDto } from "./dtos/create-expense.dto";
 import { UpdateExpenseDto } from "./dtos/update-expense.dto";
+import { PaginationDto } from "../common/pagination.dto";
+import { ExpenseQueryDto } from "./dtos/expense-query.dto";
 
 
 @Controller("expenses")
@@ -9,8 +11,10 @@ export class ExpenseController{
     constructor(private readonly expenseService: ExpenseService){}
 
     @Get()
-    getAllExpenses(){
-        return this.expenseService.getAllExpenses()
+    getAllExpenses(
+        @Query() expenseQueryDto: ExpenseQueryDto
+    ){
+        return this.expenseService.getAllExpenses(expenseQueryDto)
     }
 
     @Get(":expenseId")

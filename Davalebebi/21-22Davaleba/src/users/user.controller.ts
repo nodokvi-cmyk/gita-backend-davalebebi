@@ -1,7 +1,9 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
+import { PaginationDto } from "../common/pagination.dto";
+import { UserQueryDto } from "./dtos/user-query.dto";
 
 
 @Controller("users")
@@ -9,8 +11,10 @@ export class UserController {
     constructor(private readonly userService: UserService){}
 
     @Get()
-    getAllUsers(){
-        return this.userService.getAllUser()
+    getAllUsers(
+        @Query() userQueryDto: UserQueryDto
+    ){
+        return this.userService.getAllUser(userQueryDto)
     }
 
     @Get(":userId")
