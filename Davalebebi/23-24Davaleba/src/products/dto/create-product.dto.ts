@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer"
-import { IsNotEmpty, IsNumber, IsPositive, IsString} from "class-validator"
+import { IsMongoId, IsNotEmpty, IsNumber, IsPositive, IsString} from "class-validator"
 
 export class CreateProductDto {
 
@@ -26,4 +26,8 @@ export class CreateProductDto {
     @IsNumber()
     @IsPositive()
     quantity!: number
+
+    @IsNotEmpty()
+    @IsMongoId()
+    buyer!: string
 }

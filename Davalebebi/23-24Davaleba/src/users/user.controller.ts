@@ -4,6 +4,7 @@ import { CreateUserDto } from "./dtos/create-user.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { PaginationDto } from "../common/pagination.dto";
 import { UserQueryDto } from "./dtos/user-query.dto";
+import { IsValidMongoId } from "../common/is-valid-object-id.dto";
 
 
 @Controller("users")
@@ -24,41 +25,41 @@ export class UserController {
         return this.userService.getAllUser(userQueryDto)
     }
 
-    @Get(":userId")
+    @Get(":id")
     getUserById(
-        @Param("userId") userId: string
+        @Param() {id}: IsValidMongoId
     ){
-        return this.userService.getUserById(Number(userId))
+        return this.userService.getUserById(id)
     }
 
     @Post()
     createUser(
         @Body() createUserDto: CreateUserDto
     ){
-        if(
-            !createUserDto.email ||
-            !createUserDto.firstName ||
-            !createUserDto.gender ||
-            !createUserDto.lastName ||
-            !createUserDto.phoneNumber
-        ){
-            throw new HttpException("Fill in all the required fields: firstName, lastName, email, phoneNumber and gender", HttpStatus.BAD_REQUEST)
-        }
+        // if(
+        //     !createUserDto.email ||
+        //     !createUserDto.firstName ||
+        //     !createUserDto.gender ||
+        //     !createUserDto.lastName ||
+        //     !createUserDto.phoneNumber
+        // ){
+        //     throw new HttpException("Fill in all the required fields: firstName, lastName, email, phoneNumber and gender", HttpStatus.BAD_REQUEST)
+        // }
         return this.userService.createUser(createUserDto)
     }
 
-    @Delete(":userId")
+    @Delete(":id")
     deleteUserById(
-        @Param("userId") userId: string
+        @Param() {id}: IsValidMongoId
     ){
-        return this.userService.deleteUserById(Number(userId))
+        return this.userService.deleteUserById(id)
     }
 
-    @Patch(":userId")
+    @Patch(":id")
     updateUserById(
-        @Param("userId") userId: string,
+        @Param() {id}: IsValidMongoId,
         @Body() updateUserDto: UpdateUserDto
     ){
-        return this.userService.updateUserById(Number(userId), updateUserDto)
+        return this.userService.updateUserById(id, updateUserDto)
     }
 }

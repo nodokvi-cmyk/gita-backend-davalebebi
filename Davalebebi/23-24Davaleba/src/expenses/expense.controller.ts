@@ -4,6 +4,7 @@ import { CreateExpenseDto } from "./dtos/create-expense.dto";
 import { UpdateExpenseDto } from "./dtos/update-expense.dto";
 import { PaginationDto } from "../common/pagination.dto";
 import { ExpenseQueryDto } from "./dtos/expense-query.dto";
+import { IsValidMongoId } from "../common/is-valid-object-id.dto";
 
 
 @Controller("expenses")
@@ -17,40 +18,40 @@ export class ExpenseController{
         return this.expenseService.getAllExpenses(expenseQueryDto)
     }
 
-    @Get(":expenseId")
+    @Get(":id")
     getExpenseById(
-        @Param("expenseId") expenseId: string
+        @Param() {id}: IsValidMongoId,
     ){
-        return this.expenseService.getExpenseById(Number(expenseId))
+        return this.expenseService.getExpenseById(id)
     }
 
     @Post()
     createExpense(
         @Body() createExpenseDto: CreateExpenseDto
     ){
-        if(
-            !createExpenseDto.category ||
-            !createExpenseDto.price ||
-            !createExpenseDto.productName ||
-            !createExpenseDto.quantity 
-        ){
-            throw new HttpException("Fill in the required fields: category, price, productName and quantity", HttpStatus.BAD_REQUEST)
-        }
+        // if(
+        //     !createExpenseDto.category ||
+        //     !createExpenseDto.price ||
+        //     !createExpenseDto.productName ||
+        //     !createExpenseDto.quantity 
+        // ){
+        //     throw new HttpException("Fill in the required fields: category, price, productName and quantity", HttpStatus.BAD_REQUEST)
+        // }
         return this.expenseService.createExpense(createExpenseDto)
     }
 
-    @Delete(":expenseId")
+    @Delete(":id")
     deleteExpenseById(
-        @Param("expenseId") expenseId: string
+        @Param() {id}: IsValidMongoId,
     ){
-        return this.expenseService.deleteExpenseById(Number(expenseId))
+        return this.expenseService.deleteExpenseById(id)
     }
 
-    @Patch(":expenseId")
+    @Patch(":id")
     updateExpenseById(
-        @Param("expenseId") expenseId: string,
+        @Param() {id}: IsValidMongoId,
         @Body() updateExpenseDto: UpdateExpenseDto
     ){
-        return this.expenseService.updateExpenseById(Number(expenseId), updateExpenseDto)
+        return this.expenseService.updateExpenseById(id, updateExpenseDto)
     }
 }
