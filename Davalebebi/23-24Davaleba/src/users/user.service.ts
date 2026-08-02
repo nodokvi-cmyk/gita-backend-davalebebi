@@ -114,6 +114,11 @@ export class UserService {
 
     async createUser(createUserDto: CreateUserDto){
 
+        const existingUser = await this.userModel.findOne({email: createUserDto.email})
+        if(existingUser){
+            throw new BadRequestException("Email already used")
+        }
+
         const startingDate = new Date()
         const endingDate = new Date(startingDate)
 
@@ -138,7 +143,13 @@ export class UserService {
     }
 
     async updateUserById(id: string, updateUserDto: UpdateUserDto){
-        const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto,
+        const existingUser = await this.userModel.findOne({email: updateUserDto.email})
+        if(existingUser){
+            throw new BadRequestException("Email already used")
+        }
+        const updatedUser = await this.userModel.findByIdAndUpdate(id, {
+            ...updateUserDto,
+        $inc: { __v: 1 } },
             {new: true}
         )
         if(!updatedUser){

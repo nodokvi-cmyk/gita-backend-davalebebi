@@ -70,6 +70,7 @@ export class ProductsService {
     const updatedProduct = await this.productModel.findByIdAndUpdate(id, {
       ...updateProductDto, 
       totalPrice,
+      $inc: { __v: 1 }
     },
     {new: true})
     return updatedProduct

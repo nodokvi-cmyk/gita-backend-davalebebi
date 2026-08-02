@@ -96,6 +96,7 @@ export class ExpenseService {
         const updatedExpense = await this.expenseModel.findByIdAndUpdate(id, {
             ...updateExpenseDto,
             totalPrice,
+            $inc: { __v: 1 }
         },
     {new: true})
 
