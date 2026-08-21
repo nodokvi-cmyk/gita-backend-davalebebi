@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,13 +18,14 @@ export class ProductsService {
     await this.productModel.deleteMany({buyer: buyerId})
   }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, userId) {
     const newProduct = await this.productModel.create({
       ...createProductDto,
-      totalPrice: createProductDto.price * createProductDto.quantity
+      totalPrice: createProductDto.price * createProductDto.quantity,
+      buyer: userId
     })
 
-    await this.usersService.addProductToUser(createProductDto.buyer, newProduct._id)
+    await this.usersService.addProductToUser(newProduct.buyer, newProduct._id)
     return newProduct
   }
 
@@ -57,10 +58,14 @@ export class ProductsService {
     return product
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, userId: string) {
     const targettedProduct = await this.productModel.findById(id)
     if(!targettedProduct){
       throw new NotFoundException("Product not found")
+    }
+
+    if(targettedProduct.buyer.toString() !== userId){
+      throw new ForbiddenException("No permission")
     }
 
     const price = updateProductDto.price ?? targettedProduct.price
@@ -76,12 +81,18 @@ export class ProductsService {
     return updatedProduct
   }
 
-  async remove(id: string) {
-    const product = await this.productModel.findByIdAndDelete(id)
+  async remove(id: string, userId: string) {
+    const product = await this.productModel.findById(id)
 
     if(!product){
       throw new NotFoundException("Product not found")
     }
+
+    if(product.buyer.toString() !== userId){
+      throw new ForbiddenException("No permission")
+    }
+
+    const deletedProduct = await this.productModel.findByIdAndDelete(id)
 
     await this.usersService.removeProductFromUser(product.buyer, product._id)
 

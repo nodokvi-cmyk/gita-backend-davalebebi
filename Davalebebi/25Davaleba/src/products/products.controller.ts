@@ -1,18 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ForbiddenException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { HasSubscriptionByEmail } from '../guards/has-subscription.guard';
 import { type Request } from 'express';
 import { IsValidMongoId } from '../common/is-valid-object-id.dto';
+import { IsAuthGuard } from '../guards/is-auth.guard';
+import { UserId } from '../users/decorators/user.decorator';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @UseGuards(IsAuthGuard)
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @UserId() userId
+  ) {
+    return this.productsService.create(createProductDto, userId);
   }
 
   @Get()
@@ -36,12 +42,17 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  update(@Param() {id}: IsValidMongoId, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  @UseGuards(IsAuthGuard)
+  update(@Param() {id}: IsValidMongoId, @Body() updateProductDto: UpdateProductDto, @UserId() userId) {
+    return this.productsService.update(id, updateProductDto, userId);
   }
 
   @Delete(':id')
-  remove(@Param() {id}: IsValidMongoId,) {
-    return this.productsService.remove(id);
+  @UseGuards(IsAuthGuard)
+  remove(
+    @Param() {id}: IsValidMongoId,
+    @UserId() userId
+  ) {
+    return this.productsService.remove(id, userId);
   }
 }

@@ -27,7 +27,7 @@ export class CreateProductDto {
     @IsPositive()
     quantity!: number
 
-    @IsNotEmpty()
-    @IsMongoId()
-    buyer!: string
+    // @IsNotEmpty()
+    // @IsMongoId()
+    // buyer!: string
 }

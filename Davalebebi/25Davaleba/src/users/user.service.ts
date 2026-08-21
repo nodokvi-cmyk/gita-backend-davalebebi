@@ -8,6 +8,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { User } from "./schema/user.schema";
 import { ProductsService } from "../products/products.service";
+import * as bcrypt from "bcrypt"
 
 
 @Injectable()
@@ -36,12 +37,13 @@ export class UserService {
         )
     }
 
-    async upgradeSubscription(email: string){
-        if(!email){
-            throw new BadRequestException("Email is required")
+    async upgradeSubscription(userId: string){
+        if(!userId){
+            throw new UnauthorizedException("No permission")
         }
 
-        const user = await this.findByEmail(email)
+        // const user = await this.findByEmail(email)
+        const user = await this.userModel.findById(userId)
         if(!user){
             throw new UnauthorizedException("Unauthorized")
         }
@@ -147,6 +149,11 @@ export class UserService {
         if(existingUser){
             throw new BadRequestException("Email already used")
         }
+        
+        if(updateUserDto.password){
+            updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10)
+        }
+
         const updatedUser = await this.userModel.findByIdAndUpdate(id, {
             ...updateUserDto,
         $inc: { __v: 1 } },
