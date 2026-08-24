@@ -4,12 +4,14 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { IsAuthGuard } from '../guards/is-auth.guard';
 import { UserId } from '../users/decorators/user.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("sign-up")
+  @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
   signUp(
     @Body() signUpDto: SignUpDto
   ){
@@ -17,6 +19,7 @@ export class AuthController {
   }
 
   @Post("sign-in")
+  @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
   signIn(
     @Body() signInDto: SignInDto
   ){

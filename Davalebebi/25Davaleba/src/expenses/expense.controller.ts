@@ -5,6 +5,7 @@ import { UpdateExpenseDto } from "./dtos/update-expense.dto";
 import { PaginationDto } from "../common/pagination.dto";
 import { ExpenseQueryDto } from "./dtos/expense-query.dto";
 import { IsValidMongoId } from "../common/is-valid-object-id.dto";
+import { Throttle } from "@nestjs/throttler";
 
 
 @Controller("expenses")
@@ -26,6 +27,7 @@ export class ExpenseController{
     }
 
     @Post()
+    @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
     createExpense(
         @Body() createExpenseDto: CreateExpenseDto
     ){
@@ -48,6 +50,7 @@ export class ExpenseController{
     }
 
     @Patch(":id")
+    @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
     updateExpenseById(
         @Param() {id}: IsValidMongoId,
         @Body() updateExpenseDto: UpdateExpenseDto

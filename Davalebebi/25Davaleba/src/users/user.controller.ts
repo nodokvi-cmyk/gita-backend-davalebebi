@@ -7,6 +7,7 @@ import { UserQueryDto } from "./dtos/user-query.dto";
 import { IsValidMongoId } from "../common/is-valid-object-id.dto";
 import { IsAuthGuard } from "../guards/is-auth.guard";
 import { UserId } from "./decorators/user.decorator";
+import { Throttle } from "@nestjs/throttler";
 
 
 @Controller("users")
@@ -14,6 +15,7 @@ export class UserController {
     constructor(private readonly userService: UserService){}
 
     @Post("upgrade-subscription")
+    @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
     @UseGuards(IsAuthGuard)
     upgradeSubscription(
         // @Headers("email") email: string
@@ -65,6 +67,7 @@ export class UserController {
     }
 
     @Patch(":id")
+    @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
     @UseGuards(IsAuthGuard)
     updateUserById(
         @Param() {id}: IsValidMongoId,

@@ -7,6 +7,7 @@ import { type Request } from 'express';
 import { IsValidMongoId } from '../common/is-valid-object-id.dto';
 import { IsAuthGuard } from '../guards/is-auth.guard';
 import { UserId } from '../users/decorators/user.decorator';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('products')
 export class ProductsController {
@@ -14,6 +15,7 @@ export class ProductsController {
 
   @Post()
   @UseGuards(IsAuthGuard)
+  @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
   create(
     @Body() createProductDto: CreateProductDto,
     @UserId() userId
@@ -43,6 +45,7 @@ export class ProductsController {
 
   @Patch(':id')
   @UseGuards(IsAuthGuard)
+  @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
   update(@Param() {id}: IsValidMongoId, @Body() updateProductDto: UpdateProductDto, @UserId() userId) {
     return this.productsService.update(id, updateProductDto, userId);
   }
