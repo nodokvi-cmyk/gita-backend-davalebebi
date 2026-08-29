@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Forb
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { HasSubscriptionByEmail } from '../guards/has-subscription.guard';
+// import { HasSubscriptionByEmail } from '../guards/has-subscription.guard';
 import { type Request } from 'express';
 import { IsValidMongoId } from '../common/is-valid-object-id.dto';
 import { IsAuthGuard } from '../guards/is-auth.guard';
@@ -24,7 +24,7 @@ export class ProductsController {
   }
 
   @Get()
-  @UseGuards(HasSubscriptionByEmail)
+  // @UseGuards(HasSubscriptionByEmail)
   findAll(
     @Req() req: Request
   ) {
@@ -34,7 +34,7 @@ export class ProductsController {
   }
 
   @Get(':id')
-  @UseGuards(HasSubscriptionByEmail)
+  // @UseGuards(HasSubscriptionByEmail)
   findOne(
     @Param() {id}: IsValidMongoId,
     @Req() req: Request

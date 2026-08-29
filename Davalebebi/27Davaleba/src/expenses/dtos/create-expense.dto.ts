@@ -7,8 +7,8 @@ export class CreateExpenseDto {
 
     @IsNotEmpty()
     @IsString()
-    @Transform(({value}) => (typeof value === "string" ? value.toLowerCase(): value))
     @IsEnum(KnownCategories)
+    @Transform(({value}) => (typeof value === "string" ? value.toLowerCase(): value))
     category!: KnownCategories
 
     @IsNotEmpty()
@@ -16,14 +16,14 @@ export class CreateExpenseDto {
     productName!: string
 
     @IsNotEmpty()
-    @Transform(({value}) => Number(value))
-    @IsNumber()
     @IsPositive()
+    @IsNumber()
+    @Transform(({value}) => Number(value))
     quantity!: number
 
     @IsNotEmpty()
-    @Transform(({value}) => Number(value))
-    @IsNumber()
     @IsPositive()
+    @IsNumber()
+    @Transform(({value}) => Number(value))
     price!: number
 }

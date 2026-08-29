@@ -6,6 +6,8 @@ import { PaginationDto } from "../common/pagination.dto";
 import { ExpenseQueryDto } from "./dtos/expense-query.dto";
 import { IsValidMongoId } from "../common/is-valid-object-id.dto";
 import { Throttle } from "@nestjs/throttler";
+import { UserId } from "../users/decorators/user.decorator";
+import { QueryParamsDto } from "../users/dtos/query-params.dto";
 
 
 @Controller("expenses")
@@ -19,6 +21,20 @@ export class ExpenseController{
         return this.expenseService.getAllExpenses(expenseQueryDto)
     }
 
+    @Get("top-spenders")
+    getTopSpenders(
+        @Query() queryParamsDto: QueryParamsDto
+    ){
+        return this.expenseService.getTopSpenders(queryParamsDto)
+    }
+
+    @Get("statistic")
+    getStatistics(
+        @Query() queryParamsDto: QueryParamsDto
+    ){
+        return this.expenseService.getStatistics(queryParamsDto)
+    }
+
     @Get(":id")
     getExpenseById(
         @Param() {id}: IsValidMongoId,
@@ -27,19 +43,11 @@ export class ExpenseController{
     }
 
     @Post()
-    @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
     createExpense(
-        @Body() createExpenseDto: CreateExpenseDto
+        @Body() createExpenseDto: CreateExpenseDto,
+        @UserId() userId
     ){
-        // if(
-        //     !createExpenseDto.category ||
-        //     !createExpenseDto.price ||
-        //     !createExpenseDto.productName ||
-        //     !createExpenseDto.quantity 
-        // ){
-        //     throw new HttpException("Fill in the required fields: category, price, productName and quantity", HttpStatus.BAD_REQUEST)
-        // }
-        return this.expenseService.createExpense(createExpenseDto)
+        return this.expenseService.createExpense(createExpenseDto, userId)
     }
 
     @Delete(":id")
@@ -50,7 +58,6 @@ export class ExpenseController{
     }
 
     @Patch(":id")
-    @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
     updateExpenseById(
         @Param() {id}: IsValidMongoId,
         @Body() updateExpenseDto: UpdateExpenseDto

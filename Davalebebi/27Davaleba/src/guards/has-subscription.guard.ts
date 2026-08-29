@@ -4,25 +4,25 @@ import { Observable } from "rxjs";
 import { UserService } from "../users/user.service";
 
 
-@Injectable()
-export class HasSubscriptionByEmail implements CanActivate{
-    constructor(private readonly userService: UserService){}
-    async canActivate(context: ExecutionContext): Promise<boolean>  {
-        const req: Request = context.switchToHttp().getRequest()
+// @Injectable()
+// export class HasSubscriptionByEmail implements CanActivate{
+//     constructor(private readonly userService: UserService){}
+//     async canActivate(context: ExecutionContext): Promise<boolean>  {
+//         const req: Request = context.switchToHttp().getRequest()
 
-        req["hasSubscription"] = false
+//         req["hasSubscription"] = false
 
-        const email = req.headers["email"]
-        if(!email || typeof email !== "string"){
-            return true
-        }
+//         const email = req.headers["email"]
+//         if(!email || typeof email !== "string"){
+//             return true
+//         }
 
-        const user = await this.userService.findByEmail(email)
+//         const user = await this.userService.findByEmail(email)
 
-        if(user && new Date(user.subscriptionEndDate) > new Date()){
-            req["hasSubscription"] = true
-        }
+//         if(user && new Date(user.subscriptionEndDate) > new Date()){
+//             req["hasSubscription"] = true
+//         }
 
-        return true
-    }
-}
+//         return true
+//     }
+// }

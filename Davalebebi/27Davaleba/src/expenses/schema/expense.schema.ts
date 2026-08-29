@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { SchemaTypes, Types } from "mongoose";
+import { KnownCategories } from "../enums/expense-category.enum";
 
 
 @Schema({
@@ -7,10 +9,10 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 export class Expense{
     @Prop({
         type: String,
-        required: true,
-        lowercase: true
+        enum: KnownCategories,
+        required: true
     })
-    category!: string
+    category!: KnownCategories
 
     @Prop({
         type: String,
@@ -35,6 +37,13 @@ export class Expense{
         required: true
     })
     totalPrice!: number
+
+    @Prop({
+        type: SchemaTypes.ObjectId,
+        required: true,
+        ref: "user"
+        })
+    spender!: Types.ObjectId
 }
 
 export const expenseSchema = SchemaFactory.createForClass(Expense)

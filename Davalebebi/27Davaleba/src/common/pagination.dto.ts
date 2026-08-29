@@ -5,15 +5,15 @@ import { IsInt, IsOptional, Max, Min } from "class-validator"
 export class PaginationDto {
 
     @IsOptional()
-    @Transform(({value}) => Number(value))
+    @Transform(({value}) => value !== undefined ? Number(value) : value)
     @IsInt()
     @Min(1)
-    page: number = 1
+    page?: number = 1
 
     @IsOptional()
-    @Transform(({value}) => Number(value))
+    @Transform(({value}) => value !== undefined ? Number(value) : value)
     @IsInt()
     @Min(1)
     @Max(30)
-    take: number = 30
+    take?: number = 30
 }

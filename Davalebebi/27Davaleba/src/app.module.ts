@@ -14,12 +14,23 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { CacheModule } from '@nestjs/cache-manager';
+import { LoggerModule } from 'pino-nestjs';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {ttl: 60 * 1000, limit: 30, blockDuration: 30 * 1000}
-    ]),
+    // ThrottlerModule.forRoot([
+    //   {ttl: 60 * 1000, limit: 30, blockDuration: 30 * 1000}
+    // ]),
+    CacheModule.register({isGlobal: true}),
+    LoggerModule.forRoot({
+      pinoHttp: {
+        transport: {
+          target: "pino-pretty",
+          options: {singleLine: true}
+        }
+      }
+    }),
     ConfigModule.forRoot({
       isGlobal: true
     }), 
@@ -39,9 +50,9 @@ import { APP_GUARD } from '@nestjs/core';
   controllers: [AppController],
   providers: [
     AppService,
-    {provide: APP_GUARD,
-      useClass: ThrottlerGuard
-    }
+    // {provide: APP_GUARD,
+    //   useClass: ThrottlerGuard
+    // }
   ],
 })
 export class AppModule {}

@@ -25,7 +25,7 @@ export class ProductsService {
       buyer: userId
     })
 
-    await this.usersService.addProductToUser(newProduct.buyer, newProduct._id)
+    // await this.usersService.addProductToUser(newProduct.buyer, newProduct._id)
     return newProduct
   }
 
@@ -94,7 +94,7 @@ export class ProductsService {
 
     const deletedProduct = await this.productModel.findByIdAndDelete(id)
 
-    await this.usersService.removeProductFromUser(product.buyer, product._id)
+    // await this.usersService.removeProductFromUser(product.buyer, product._id)
 
     return product
   }

@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer"
-import { IsEmail, IsIn, IsNotEmpty, IsString } from "class-validator"
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString } from "class-validator"
 
 
 export class CreateUserDto {
@@ -19,11 +19,13 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsString()
-    phoneNumber!: string
-
-    @IsNotEmpty()
-    @IsString()
     @Transform(({value}) => (typeof value === "string" ? value.toLowerCase() : value))
     @IsIn(["m", "f"])
     gender!: string
+
+    @IsNotEmpty()
+    @Transform(({value}) => Number(value))
+    @IsNumber()
+    age!: number
+
 }

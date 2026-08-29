@@ -25,20 +25,7 @@ export class User {
         lowercase: true
     })
     email!: string
-
-    @Prop({
-        type: String,
-        required: true,
-        select: false
-    })
-    password!: string
-
-    @Prop({
-        type: String,
-        required: true
-    })
-    phoneNumber!: string
-
+    
     @Prop({
         type: String,
         required: true
@@ -46,23 +33,57 @@ export class User {
     gender!: string
 
     @Prop({
-        type: Date,
+        type: Number,
         required: true
     })
-    subscriptionStartDate!: Date
+    age!: number
 
     @Prop({
-        type: Date,
-        required: true
+        type: Boolean,
+        required: true,
+        default: true
     })
-    subscriptionEndDate!: Date
+    isActive!: boolean
 
     @Prop({
         type: [SchemaTypes.ObjectId],
-        ref: "product",
+        ref: "expense",
         default: []
     })
-    orderedProducts!: Types.ObjectId[]
+    ownedExpenses!: Types.ObjectId[]
+    
+    // @Prop({
+    //     type: String,
+    //     required: true,
+    //     select: false
+    // })
+    // password!: string
+
+    // @Prop({
+    //     type: String,
+    //     required: true
+    // })
+    // phoneNumber!: string
+
+
+    // @Prop({
+    //     type: Date,
+    //     required: true
+    // })
+    // subscriptionStartDate!: Date
+
+    // @Prop({
+    //     type: Date,
+    //     required: true
+    // })
+    // subscriptionEndDate!: Date
+
+    // @Prop({
+    //     type: [SchemaTypes.ObjectId],
+    //     ref: "product",
+    //     default: []
+    // })
+    // orderedProducts!: Types.ObjectId[]
 }
 
 export const userSchema = SchemaFactory.createForClass(User)

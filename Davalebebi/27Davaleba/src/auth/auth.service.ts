@@ -29,9 +29,9 @@ export class AuthService {
 
         const newUser = await this.userModel.create({
             ...signUpDto,
-            password: hashedPassword,
-            subscriptionStartDate: startingDate,
-            subscriptionEndDate: endingDate
+            // password: hashedPassword,
+            // subscriptionStartDate: startingDate,
+            // subscriptionEndDate: endingDate
         })
 
         return "User created successfully"
@@ -43,10 +43,10 @@ export class AuthService {
             throw new BadRequestException("Email or Password is incorrect")
         }
 
-        const isCorrectPassword = await bcrypt.compare(signInDto.password, existingUser.password)
-        if(!isCorrectPassword){
-            throw new BadRequestException("Email or Password is incorrect")
-        }
+        // const isCorrectPassword = await bcrypt.compare(signInDto.password, existingUser.password)
+        // if(!isCorrectPassword){
+        //     throw new BadRequestException("Email or Password is incorrect")
+        // }
 
         const payLoad = {
             userId: existingUser._id
