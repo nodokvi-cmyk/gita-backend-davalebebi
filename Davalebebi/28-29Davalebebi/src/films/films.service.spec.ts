@@ -168,7 +168,7 @@ describe('FilmsService', () => {
       ).rejects.toThrow(new NotFoundException('Film not found'));
     });
 
-    it('shouuld throw NotFoundException if film exists but updated director is not found', async () => {
+    it('shouuuld throw NotFoundException if film exists but updated director is not found', async () => {
       filmRepoMock.findOne.mockResolvedValue(filmMock);
       directorRepoMock.findOneBy.mockResolvedValue(null);
 
