@@ -49,12 +49,12 @@ export class Product {
     })
     totalPrice!: number
 
-    @Prop({
-        type: SchemaTypes.ObjectId,
-        required: true,
-        ref: "user"
-    })
-    buyer!: Types.ObjectId
+    // @Prop({
+    //     type: SchemaTypes.ObjectId,
+    //     required: true,
+    //     ref: "user"
+    // })
+    // buyer!: Types.ObjectId
 }
 
 export const productSchema = SchemaFactory.createForClass(Product)

@@ -15,7 +15,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @UseGuards(IsAuthGuard)
+  // @UseGuards(IsAuthGuard)
   @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
   @UseInterceptors(FilesInterceptor('productPhotos'))
   create(
@@ -27,7 +27,7 @@ export class ProductsController {
   }
 
   @Delete(':id/photos')
-  @UseGuards(IsAuthGuard)
+  // @UseGuards(IsAuthGuard)
   deletePhoto(
       @Param('id') productId: string,
       @Body('photoUrl') photoUrl: string,
@@ -63,7 +63,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @UseGuards(IsAuthGuard)
+  // @UseGuards(IsAuthGuard)
   remove(
     @Param() {id}: IsValidMongoId,
     @UserId() userId

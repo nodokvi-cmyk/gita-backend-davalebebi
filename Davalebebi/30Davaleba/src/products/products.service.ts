@@ -39,7 +39,7 @@ export class ProductsService {
     const newProduct = await this.productModel.create({
       ...createProductDto,
       totalPrice: createProductDto.price * createProductDto.quantity,
-      buyer: userId,
+      // buyer: userId,
       photos: uploadedPhotoUrls
     })
 
@@ -53,14 +53,18 @@ export class ProductsService {
         throw new NotFoundException('Product not found')
     }
 
-    if (!product.photos.includes(photoUrl)) {
+    const fullPhotoUrl = product.photos.find(url => url.includes(photoUrl))
+
+    if (!fullPhotoUrl){
         throw new NotFoundException('Photo not found in this product')
     }
 
-    const fileId = photoUrl.replace(`${process.env.CLOUDFRONT_DOMAIN_NAME}/`, '')
+    const productPhotosIndex = fullPhotoUrl.indexOf('productPhotos/');
+    const fileId = productPhotosIndex !== -1 ? fullPhotoUrl.substring(productPhotosIndex) : fullPhotoUrl
+
     await this.awsS3Service.deleteFile(fileId)
 
-    product.photos = product.photos.filter(url => url !== photoUrl)
+    product.photos = product.photos.filter(url => url !== fullPhotoUrl)
     await product.save()
 
     return product
@@ -101,9 +105,9 @@ export class ProductsService {
       throw new NotFoundException("Product not found")
     }
 
-    if(targettedProduct.buyer.toString() !== userId){
-      throw new ForbiddenException("No permission")
-    }
+    // if(targettedProduct.buyer.toString() !== userId){
+    //   throw new ForbiddenException("No permission")
+    // }
 
     const price = updateProductDto.price ?? targettedProduct.price
     const quantity = updateProductDto.quantity ?? targettedProduct.quantity
@@ -125,9 +129,9 @@ export class ProductsService {
       throw new NotFoundException("Product not found")
     }
 
-    if(product.buyer.toString() !== userId){
-      throw new ForbiddenException("No permission")
-    }
+    // if(product.buyer.toString() !== userId){
+    //   throw new ForbiddenException("No permission")
+    // }
 
     if (product.photos && product.photos.length > 0) {
       for (const photoUrl of product.photos) {

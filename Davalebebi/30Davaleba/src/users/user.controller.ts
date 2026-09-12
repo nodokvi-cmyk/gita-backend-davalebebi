@@ -68,7 +68,10 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') {id}: IsValidMongoId) {
+  remove(
+    // @Param('id') {id}: IsValidMongoId
+    @Param("id") id: string
+) {
     return this.userService.remove(id);
   }
 }
