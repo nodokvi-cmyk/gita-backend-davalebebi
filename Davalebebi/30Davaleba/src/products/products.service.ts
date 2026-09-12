@@ -5,28 +5,65 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Product } from './schema/product.schema';
 import { UserService } from '../users/user.service';
+import path from 'path';
+import { randomUUID } from 'crypto';
+import * as mime from "mime-types"
+import { AwsS3Service } from '../aws-s3/aws-s3.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectModel("product") private productModel: Model<Product>,
     @Inject(forwardRef(() => UserService))
-    private usersService: UserService
+    private usersService: UserService,
+    private awsS3Service: AwsS3Service
   ){}
 
   async removeProductsAfterUserDeleted(buyerId: string | Types.ObjectId){
     await this.productModel.deleteMany({buyer: buyerId})
   }
 
-  async create(createProductDto: CreateProductDto, userId) {
+  async create(createProductDto: CreateProductDto, userId, files: Array<Express.Multer.File>) {
+    const uploadedPhotoUrls: string[] = []
+
+    for (let file of files){
+      const ext = path.extname(file.originalname)
+      const fileId = `productPhotos/${randomUUID()}${ext}`
+      const fixedMimeType = mime.lookup(file.originalname || file.mimetype)
+      
+      await this.awsS3Service.uploadFile(fileId, file.buffer, fixedMimeType)
+      const cloudFrontUri = `${process.env.CLOUDFRONT_DOMAIN_NAME}/${fileId}`
+      uploadedPhotoUrls.push(cloudFrontUri)
+    }
+
     const newProduct = await this.productModel.create({
       ...createProductDto,
       totalPrice: createProductDto.price * createProductDto.quantity,
-      buyer: userId
+      buyer: userId,
+      photos: uploadedPhotoUrls
     })
 
     // await this.usersService.addProductToUser(newProduct.buyer, newProduct._id)
     return newProduct
+  }
+
+  async deleteSinglePhoto(productId: string, photoUrl: string) {
+    const product = await this.productModel.findById(productId)
+    if (!product) {
+        throw new NotFoundException('Product not found')
+    }
+
+    if (!product.photos.includes(photoUrl)) {
+        throw new NotFoundException('Photo not found in this product')
+    }
+
+    const fileId = photoUrl.replace(`${process.env.CLOUDFRONT_DOMAIN_NAME}/`, '')
+    await this.awsS3Service.deleteFile(fileId)
+
+    product.photos = product.photos.filter(url => url !== photoUrl)
+    await product.save()
+
+    return product
   }
 
   async findAll(hasSubscription: boolean) {
@@ -90,6 +127,13 @@ export class ProductsService {
 
     if(product.buyer.toString() !== userId){
       throw new ForbiddenException("No permission")
+    }
+
+    if (product.photos && product.photos.length > 0) {
+      for (const photoUrl of product.photos) {
+        const fileId = photoUrl.replace(`${process.env.CLOUDFRONT_DOMAIN_NAME}/`, '')
+        await this.awsS3Service.deleteFile(fileId)
+      }
     }
 
     const deletedProduct = await this.productModel.findByIdAndDelete(id)

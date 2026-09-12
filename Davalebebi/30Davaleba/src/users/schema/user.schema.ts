@@ -20,6 +20,12 @@ export class User {
 
     @Prop({
         type: String,
+        default: ""
+    })
+    avatarUrl!: string
+
+    @Prop({
+        type: String,
         required: true,
         unique: true,
         lowercase: true

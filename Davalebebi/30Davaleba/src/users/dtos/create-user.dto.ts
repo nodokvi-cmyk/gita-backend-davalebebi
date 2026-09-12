@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer"
-import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsString } from "class-validator"
+import { IsEmail, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator"
 
 
 export class CreateUserDto {
@@ -28,4 +28,6 @@ export class CreateUserDto {
     @IsNumber()
     age!: number
 
+    @IsOptional()
+    avatarUrl?: string
 }

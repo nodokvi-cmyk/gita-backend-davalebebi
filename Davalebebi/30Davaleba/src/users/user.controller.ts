@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Headers, HttpException, HttpStatus, Param, Patch, Post, Query, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, ForbiddenException, Get, Headers, HttpException, HttpStatus, Param, Patch, Post, Query, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
@@ -8,11 +8,27 @@ import { IsValidMongoId } from "../common/is-valid-object-id.dto";
 import { IsAuthGuard } from "../guards/is-auth.guard";
 import { UserId } from "./decorators/user.decorator";
 import { Throttle } from "@nestjs/throttler";
+import { memoryStorage } from "multer";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 
 @Controller("users")
 export class UserController {
     constructor(private readonly userService: UserService){}
+
+    @Patch(':id/avatar')
+    @UseInterceptors(FileInterceptor('avatar', { storage: memoryStorage() }))
+    uploadFile(@UploadedFile() file: Express.Multer.File, @Param("id") userId: string) {
+      console.log(file);
+      return this.userService.uploadAvatar(file, userId)
+    }
+
+    @Delete(":id/avatar")
+    deleteAvatar(
+      @Param("id") userId: string
+    ){
+      return this.userService.deleteAvatar(userId)
+    }
 
     // @Post("upgrade-subscription")
     // // @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})

@@ -11,17 +11,55 @@ import { ProductsService } from "../products/products.service";
 import * as bcrypt from "bcrypt"
 import { ExpenseService } from "../expenses/expense.service";
 import { faker } from '@faker-js/faker';
-
+import path from "path";
+import { randomUUID } from "crypto";
+import * as mime from "mime-types"
+import { AwsS3Service } from "../aws-s3/aws-s3.service";
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel("user") private userModel: Model<User>,
         @Inject(forwardRef(() => ExpenseService))
-        private expenseService: ExpenseService
+        private expenseService: ExpenseService,
+        private awsS3Service: AwsS3Service
         // @Inject(forwardRef(() => ProductsService))
         // private productsService: ProductsService
     ){}
+
+    async uploadAvatar(file: Express.Multer.File, userId: string){
+        const ext = path.extname(file.originalname) 
+        const fileId = `avatars/${randomUUID()}${ext}`
+        const fixedMimeType = mime.lookup(file.originalname || file.mimetype)
+
+        await this.awsS3Service.uploadFile(fileId, file.buffer, fixedMimeType)
+        const cloudFrontUri = `${process.env.CLOUDFRONT_DOMAIN_NAME}/${fileId}`
+
+        const updatedUser = await this.userModel.findByIdAndUpdate(userId, {
+            avatarUrl: cloudFrontUri
+        }, {new: true})
+
+        return updatedUser
+    }
+
+    async deleteAvatar(userId: string) {
+        const user = await this.userModel.findById(userId);
+        if (!user || !user.avatarUrl) {
+            throw new NotFoundException('User or avatar not found')
+        }
+
+        const fileId = user.avatarUrl.replace(`${process.env.CLOUDFRONT_DOMAIN_NAME}/`, '')
+
+        await this.awsS3Service.deleteFile(fileId)
+
+        const updatedUser = await this.userModel.findByIdAndUpdate(
+            userId,
+            { avatarUrl: '' },
+            { new: true }
+        )
+
+        return updatedUser
+    }
 
     async getStats(){
         const resp = await this.userModel.aggregate([
@@ -193,11 +231,18 @@ export class UserService {
     }
 
     async remove(id: string){
-        const user = await this.userModel.findByIdAndDelete(id)
+        const user = await this.userModel.findById(id)
         if(!user){
             throw new NotFoundException("User not found")
         }
+        if (user.avatarUrl) {
+            const fileId = user.avatarUrl.replace(`${process.env.CLOUDFRONT_DOMAIN_NAME}/`, '')
+            await this.awsS3Service.deleteFile(fileId)
+        }
+
         await this.expenseService.removeExpensesAfterUserDeleted(id)
+
+        await this.userModel.findByIdAndDelete(id)
         return user
     }
 

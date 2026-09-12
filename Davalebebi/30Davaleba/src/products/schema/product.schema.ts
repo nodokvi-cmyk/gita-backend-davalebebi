@@ -5,6 +5,13 @@ import { SchemaTypes, Types } from "mongoose";
     timestamps: true
 })
 export class Product {
+
+    @Prop({
+        type: [String],
+        default: []
+    })
+    photos!: string[]
+
     @Prop({
         type: Number,
         required: true

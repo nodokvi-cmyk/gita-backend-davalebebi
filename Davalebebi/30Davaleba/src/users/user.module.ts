@@ -5,6 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { userSchema } from "./schema/user.schema";
 import { ProductsModule } from "../products/products.module";
 import { ExpenseModule } from "../expenses/expense.module";
+import { AwsS3Module } from "../aws-s3/aws-s3.module";
 
 
 @Module({
@@ -13,7 +14,8 @@ import { ExpenseModule } from "../expenses/expense.module";
             {name: "user", schema: userSchema}
         ]),
         // forwardRef(() => ProductsModule)
-        forwardRef(() => ExpenseModule)
+        forwardRef(() => ExpenseModule),
+        AwsS3Module
     ],
     controllers: [UserController],
     providers: [UserService],

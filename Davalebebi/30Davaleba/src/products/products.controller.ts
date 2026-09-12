@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, ForbiddenException, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -8,6 +8,7 @@ import { IsValidMongoId } from '../common/is-valid-object-id.dto';
 import { IsAuthGuard } from '../guards/is-auth.guard';
 import { UserId } from '../users/decorators/user.decorator';
 import { Throttle } from '@nestjs/throttler';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('products')
 export class ProductsController {
@@ -16,11 +17,22 @@ export class ProductsController {
   @Post()
   @UseGuards(IsAuthGuard)
   @Throttle({default: {ttl: 60 * 1000, limit: 5, blockDuration: 30 * 1000}})
+  @UseInterceptors(FilesInterceptor('productPhotos'))
   create(
     @Body() createProductDto: CreateProductDto,
-    @UserId() userId
+    @UserId() userId,
+    @UploadedFiles() files: Array<Express.Multer.File>
   ) {
-    return this.productsService.create(createProductDto, userId);
+    return this.productsService.create(createProductDto, userId, files);
+  }
+
+  @Delete(':id/photos')
+  @UseGuards(IsAuthGuard)
+  deletePhoto(
+      @Param('id') productId: string,
+      @Body('photoUrl') photoUrl: string,
+  ) {
+    return this.productsService.deleteSinglePhoto(productId, photoUrl);
   }
 
   @Get()
