@@ -1,0 +1,253 @@
+paths:
+  /products:
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      description: >-
+        Creates a product. Accepts product fields plus one or more photo files
+        sent as multipart/form-data under the field name productPhotos.
+      operationId: productsCreate
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - price
+                - name
+                - category
+                - description
+                - quantity
+              properties:
+                price:
+                  type: number
+                  description: Unit price
+                  example: 49.99
+                name:
+                  type: string
+                  example: Wireless Headphones
+                category:
+                  type: string
+                  example: electronics
+                description:
+                  type: string
+                  example: Noise cancelling bluetooth headphones
+                quantity:
+                  type: number
+                  example: 10
+                productPhotos:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+            encoding:
+              productPhotos:
+                style: form
+                explode: false
+      responses:
+        "201":
+          description: Created product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          description: Too many requests (rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      description: Returns the full product list
+      operationId: productsFindAll
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get a single product by id
+      operationId: productsFindOne
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: The requested product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags:
+        - Products
+      summary: Update a product
+      description: Updates product fields (requires authentication)
+      operationId: productsUpdate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductDto"
+      responses:
+        "200":
+          description: The updated product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      description: Removes the product and its photos from storage
+      operationId: productsRemove
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: The deleted product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /products/{id}/photos:
+    delete:
+      tags:
+        - Products
+      summary: Delete a single product photo
+      description: Removes one photo (by URL) from a product
+      operationId: productsDeletePhoto
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - photoUrl
+              properties:
+                photoUrl:
+                  type: string
+                  description: URL (or part of it) of the photo to delete
+      responses:
+        "200":
+          description: Product with the photo removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  schemas:
+    CreateProductDto:
+      type: object
+      required:
+        - price
+        - name
+        - category
+        - description
+        - quantity
+      properties:
+        price:
+          type: number
+          exclusiveMinimum: 0
+          example: 49.99
+        name:
+          type: string
+          example: Wireless Headphones
+        category:
+          type: string
+          example: electronics
+        description:
+          type: string
+          example: Noise cancelling bluetooth headphones
+        quantity:
+          type: number
+          exclusiveMinimum: 0
+          example: 10
+    UpdateProductDto:
+      type: object
+      properties:
+        price:
+          type: number
+          exclusiveMinimum: 0
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+          exclusiveMinimum: 0
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60f7b1c9b3f1a9b4c0d1e2f3
+        photos:
+          type: array
+          items:
+            type: string
+            format: uri
+        price:
+          type: number
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        quantity:
+          type: number
+        totalPrice:
+          type: number
+          description: price multiplied by quantity
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        __v:
+          type: integer
+

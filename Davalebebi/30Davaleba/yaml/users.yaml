@@ -1,0 +1,264 @@
+paths:
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      description: Creates a user with the given details
+      operationId: usersCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserDto"
+      responses:
+        "201":
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+    get:
+      tags:
+        - Users
+      summary: Get paginated list of users
+      description: Returns a page of users
+      operationId: usersFindAll
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/TakeParam"
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+  /users/statistic:
+    get:
+      tags:
+        - Users
+      summary: Get user statistics grouped by gender
+      description: Returns the average age per gender
+      operationId: usersGetStats
+      responses:
+        "200":
+          description: Gender based statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserStatistic"
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get a single user by id
+      operationId: usersFindOne
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: The requested user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags:
+        - Users
+      summary: Update a user
+      operationId: usersUpdate
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserDto"
+      responses:
+        "200":
+          description: The updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      operationId: usersRemove
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: The deleted user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /users/{id}/avatar:
+    patch:
+      tags:
+        - Users
+      summary: Upload a user avatar
+      description: Uploads an avatar image and updates the user avatarUrl
+      operationId: usersUploadAvatar
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - avatar
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: The avatar image file
+      responses:
+        "200":
+          description: User with updated avatarUrl
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Users
+      summary: Delete a user avatar
+      description: Removes the avatar from storage and clears avatarUrl
+      operationId: usersDeleteAvatar
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: User with cleared avatarUrl
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  schemas:
+    CreateUserDto:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - gender
+        - age
+      properties:
+        firstName:
+          type: string
+          example: Nika
+        lastName:
+          type: string
+          example: Kapanadze
+        email:
+          type: string
+          format: email
+          example: nika@example.com
+        gender:
+          type: string
+          enum: [m, f]
+          example: m
+        age:
+          type: number
+          example: 25
+        avatarUrl:
+          type: string
+          description: Optional avatar URL
+    UpdateUserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 6
+          maxLength: 20
+        phoneNumber:
+          type: string
+        gender:
+          type: string
+          enum: [m, f]
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60f7b1c9b3f1a9b4c0d1e2f3
+        firstName:
+          type: string
+        lastName:
+          type: string
+        avatarUrl:
+          type: string
+        email:
+          type: string
+          format: email
+        gender:
+          type: string
+          enum: [m, f]
+        age:
+          type: number
+        isActive:
+          type: boolean
+          default: true
+        ownedExpenses:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        __v:
+          type: integer
+    UserStatistic:
+      type: object
+      properties:
+        gender:
+          type: string
+          enum: [m, f]
+        averageAge:
+          type: number
+          example: 33.5
+

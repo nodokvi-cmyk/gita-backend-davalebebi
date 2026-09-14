@@ -1,0 +1,119 @@
+paths:
+  /auth/sign-up:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user
+      description: Creates a brand new user account
+      operationId: authSignUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpDto"
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: string
+                example: User created successfully
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /auth/sign-in:
+    post:
+      tags:
+        - Auth
+      summary: Sign in
+      description: Authenticates a user and returns a JWT access token
+      operationId: authSignIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInDto"
+      responses:
+        "201":
+          description: JWT access token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthTokenResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /auth/current-user:
+    get:
+      tags:
+        - Auth
+      summary: Get currently authenticated user
+      description: Returns the profile of the user attached to the bearer token
+      operationId: authCurrentUser
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+components:
+  schemas:
+    SignUpDto:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+        - password
+        - phoneNumber
+        - gender
+      properties:
+        firstName:
+          type: string
+          example: Nika
+        lastName:
+          type: string
+          example: Kapanadze
+        email:
+          type: string
+          format: email
+          example: nika@example.com
+        password:
+          type: string
+          format: password
+          minLength: 6
+          maxLength: 20
+          example: secret123
+        phoneNumber:
+          type: string
+          example: "+995 555 55 55 55"
+        gender:
+          type: string
+          enum: [m, f]
+          example: m
+    SignInDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: nika@example.com
+        password:
+          type: string
+          format: password
+          example: secret123
+    AuthTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...

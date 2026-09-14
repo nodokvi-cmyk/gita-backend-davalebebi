@@ -1,0 +1,16 @@
+paths:
+  /:
+    get:
+      tags:
+        - App
+      summary: Application root endpoint
+      description: Returns a simple hello message
+      operationId: appGetHello
+      responses:
+        "200":
+          description: Hello message
+          content:
+            application/json:
+              schema:
+                type: string
+                example: Hello World!

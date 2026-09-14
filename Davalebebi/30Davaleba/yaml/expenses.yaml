@@ -1,0 +1,261 @@
+paths:
+  /expenses:
+    get:
+      tags:
+        - Expenses
+      summary: Get paginated list of expenses
+      description: Filters by category and price range
+      operationId: expensesGetAll
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/TakeParam"
+        - name: category
+          in: query
+          required: false
+          description: Filter by expense category
+          schema:
+            type: string
+            enum: [shopping, travel, gym, food]
+        - name: priceFrom
+          in: query
+          required: false
+          description: Minimum price
+          schema:
+            type: number
+            exclusiveMinimum: 0
+        - name: priceTo
+          in: query
+          required: false
+          description: Maximum price
+          schema:
+            type: number
+            exclusiveMinimum: 0
+      responses:
+        "200":
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+    post:
+      tags:
+        - Expenses
+      summary: Create a new expense
+      description: Creates an expense for the requesting user
+      operationId: expensesCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExpenseDto"
+      responses:
+        "201":
+          description: Created expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  /expenses/top-spenders:
+    get:
+      tags:
+        - Expenses
+      summary: Get top spenders
+      description: Returns users ranked by total amount spent
+      operationId: expensesTopSpenders
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/TakeParam"
+      responses:
+        "200":
+          description: Ranked list of top spenders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopSpender"
+  /expenses/statistic:
+    get:
+      tags:
+        - Expenses
+      summary: Get expense statistics by category
+      description: Returns total sums and item counts per category
+      operationId: expensesStatistics
+      parameters:
+        - $ref: "#/components/parameters/PageParam"
+        - $ref: "#/components/parameters/TakeParam"
+      responses:
+        "200":
+          description: Category based statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExpenseStatistic"
+  /expenses/{id}:
+    get:
+      tags:
+        - Expenses
+      summary: Get a single expense by id
+      operationId: expensesGetById
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: The requested expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags:
+        - Expenses
+      summary: Update an expense
+      operationId: expensesUpdate
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateExpenseDto"
+      responses:
+        "200":
+          description: The updated expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags:
+        - Expenses
+      summary: Delete an expense
+      operationId: expensesDelete
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: The deleted expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  schemas:
+    CreateExpenseDto:
+      type: object
+      required:
+        - category
+        - productName
+        - quantity
+        - price
+      properties:
+        category:
+          type: string
+          enum: [shopping, travel, gym, food]
+          example: shopping
+        productName:
+          type: string
+          example: Milk
+        quantity:
+          type: number
+          exclusiveMinimum: 0
+          example: 2
+        price:
+          type: number
+          exclusiveMinimum: 0
+          example: 4.5
+    UpdateExpenseDto:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [shopping, travel, gym, food]
+        productName:
+          type: string
+        quantity:
+          type: number
+          exclusiveMinimum: 0
+        price:
+          type: number
+          exclusiveMinimum: 0
+    Expense:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 60f7b1c9b3f1a9b4c0d1e2f3
+        category:
+          type: string
+          enum: [shopping, travel, gym, food]
+        productName:
+          type: string
+        quantity:
+          type: number
+        price:
+          type: number
+        totalPrice:
+          type: number
+          description: price multiplied by quantity
+        spender:
+          type: string
+          description: ObjectId of the user who owns the expense
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        __v:
+          type: integer
+    TopSpender:
+      type: object
+      properties:
+        rank:
+          type: integer
+          example: 1
+        totalSpentByThisUser:
+          type: number
+          example: 12450
+        user:
+          type: object
+          properties:
+            firstName:
+              type: string
+            lastName:
+              type: string
+            email:
+              type: string
+              format: email
+    ExpenseStatistic:
+      type: object
+      properties:
+        category:
+          type: string
+          enum: [shopping, travel, gym, food]
+        totalExpenseSum:
+          type: number
+          example: 5000
+        totalExpenseItems:
+          type: number
+          example: 120
+
