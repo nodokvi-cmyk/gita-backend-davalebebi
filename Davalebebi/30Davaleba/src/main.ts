@@ -8,15 +8,17 @@ import { join } from 'node:path';
 import * as yaml from 'js-yaml';
 
 /**
- * The API contract lives in the `yaml` folder as plain YAML files (one per
+ * The API contract lives in `src/yaml` as plain YAML files (one per
  * resource), so the controllers stay free of Swagger decorators.
  *
- * Resource fragments merged on top of `yaml/openapi.yaml`.
+ * Resource fragments merged on top of `src/yaml/openapi.yaml`.
  */
 const YAML_RESOURCES = ['app', 'auth', 'users', 'products', 'expenses'];
 
 function resolveYamlFile(fileName: string): string {
   const candidates = [
+    join(process.cwd(), 'src', 'yaml', fileName),
+    join(__dirname, '..', 'src', 'yaml', fileName),
     join(process.cwd(), 'yaml', fileName),
     join(__dirname, '..', 'yaml', fileName),
     join(__dirname, 'yaml', fileName),
