@@ -16,6 +16,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import { LoggerModule } from 'pino-nestjs';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -41,6 +42,16 @@ import { LoggerModule } from 'pino-nestjs';
         secret: configService.get("JWT_SECRET")
       }),
       inject: [ConfigService]
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.EMAIL_HOST,
+        port: 465,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      }
     }),
     MongooseModule.forRoot(process.env.MONGODB_URI!),
     UserModule, 

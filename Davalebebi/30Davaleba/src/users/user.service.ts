@@ -15,6 +15,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 import * as mime from "mime-types"
 import { AwsS3Service } from "../aws-s3/aws-s3.service";
+import { EmailSenderService } from "../email-sender/email-sender.service";
 
 @Injectable()
 export class UserService {
@@ -22,7 +23,8 @@ export class UserService {
         @InjectModel("user") private userModel: Model<User>,
         @Inject(forwardRef(() => ExpenseService))
         private expenseService: ExpenseService,
-        private awsS3Service: AwsS3Service
+        private awsS3Service: AwsS3Service,
+        private emailSenderService: EmailSenderService
         // @Inject(forwardRef(() => ProductsService))
         // private productsService: ProductsService
     ){}
@@ -243,6 +245,8 @@ export class UserService {
         await this.expenseService.removeExpensesAfterUserDeleted(id)
 
         await this.userModel.findByIdAndDelete(id)
+
+        await this.emailSenderService.sendDeactivationMessage(user.email)
         return user
     }
 

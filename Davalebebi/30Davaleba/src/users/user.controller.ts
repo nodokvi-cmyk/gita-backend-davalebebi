@@ -68,6 +68,7 @@ export class UserController {
   }
 
   @Delete(':id')
+  @UseGuards(IsAuthGuard)
   remove(
     // @Param('id') {id}: IsValidMongoId
     @Param("id") id: string

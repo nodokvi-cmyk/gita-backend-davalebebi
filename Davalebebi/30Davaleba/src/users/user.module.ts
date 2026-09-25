@@ -6,6 +6,7 @@ import { userSchema } from "./schema/user.schema";
 import { ProductsModule } from "../products/products.module";
 import { ExpenseModule } from "../expenses/expense.module";
 import { AwsS3Module } from "../aws-s3/aws-s3.module";
+import { EmailSenderModule } from "../email-sender/email-sender.module";
 
 
 @Module({
@@ -15,7 +16,8 @@ import { AwsS3Module } from "../aws-s3/aws-s3.module";
         ]),
         // forwardRef(() => ProductsModule)
         forwardRef(() => ExpenseModule),
-        AwsS3Module
+        AwsS3Module,
+        EmailSenderModule
     ],
     controllers: [UserController],
     providers: [UserService],

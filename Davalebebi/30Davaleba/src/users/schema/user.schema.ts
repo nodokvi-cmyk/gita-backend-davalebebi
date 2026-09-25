@@ -19,6 +19,22 @@ export class User {
     lastName!: string
 
     @Prop({
+        type: Boolean,
+        default: false
+    })
+    isVerified!: boolean
+
+    @Prop({
+        type: String,
+    })
+    OTPCode?: string
+
+    @Prop({
+        type: Number,
+    })
+    OTPCodeExpirationDate?: number
+
+    @Prop({
         type: String,
         default: ""
     })
@@ -38,18 +54,18 @@ export class User {
     })
     gender!: string
 
-    @Prop({
-        type: Number,
-        required: true
-    })
-    age!: number
+    // @Prop({
+    //     type: Number,
+    //     required: true
+    // })
+    // age!: number
 
-    @Prop({
-        type: Boolean,
-        required: true,
-        default: true
-    })
-    isActive!: boolean
+    // @Prop({
+    //     type: Boolean,
+    //     required: true,
+    //     default: true
+    // })
+    // isActive!: boolean
 
     @Prop({
         type: [SchemaTypes.ObjectId],
@@ -58,12 +74,12 @@ export class User {
     })
     ownedExpenses!: Types.ObjectId[]
     
-    // @Prop({
-    //     type: String,
-    //     required: true,
-    //     select: false
-    // })
-    // password!: string
+    @Prop({
+        type: String,
+        required: true,
+        select: false
+    })
+    password!: string
 
     // @Prop({
     //     type: String,
