@@ -1,0 +1,52 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PostsWithoutAuthorPayload {
+  id: ID!
+  title: String!
+  desc: String!
+}
+
+type UserPayload {
+  _id: ID!
+  fullName: String!
+  email: String!
+  posts: [PostsWithoutAuthorPayload!]!
+}
+
+type UserWithoutPostsPayload {
+  _id: ID!
+  fullName: String!
+  email: String!
+}
+
+type PostPayload {
+  id: ID!
+  title: String!
+  desc: String!
+  author: UserWithoutPostsPayload!
+}
+
+type Query {
+  findAllUsers: [UserPayload!]!
+  findAllPosts: [PostPayload!]!
+  findOnePost(id: ID!): PostPayload!
+}
+
+type Mutation {
+  createUser(CreateUserInput: CreateUserInput!): UserPayload!
+  removeUser(id: ID!): UserPayload!
+  createPost(createPostInput: CreatePostInput!): PostPayload!
+  removePost(id: ID!): PostPayload!
+}
+
+input CreateUserInput {
+  fullName: String!
+  email: String!
+}
+
+input CreatePostInput {
+  title: String!
+  desc: String!
+}
