@@ -1,7 +1,6 @@
 import { ArgsType, Field, ID, InputType } from "@nestjs/graphql";
 import { IsMongoId, IsNotEmpty } from "class-validator";
 
-@InputType()
 @ArgsType()
 export class ValidMongoId {
     @Field(() => ID)
