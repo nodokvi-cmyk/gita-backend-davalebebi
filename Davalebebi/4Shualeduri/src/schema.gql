@@ -3,7 +3,7 @@
 # ------------------------------------------------------
 
 type PostsWithoutAuthorPayload {
-  id: ID!
+  _id: ID!
   title: String!
   desc: String!
 }
@@ -22,31 +22,62 @@ type UserWithoutPostsPayload {
 }
 
 type PostPayload {
-  id: ID!
+  _id: ID!
   title: String!
   desc: String!
   author: UserWithoutPostsPayload!
 }
 
+type SignUpPayload {
+  accessToken: String!
+  user: UserWithoutPostsPayload!
+}
+
+type SignInPayload {
+  accessToken: String!
+}
+
 type Query {
   findAllUsers: [UserPayload!]!
+  findOneUser(id: ID!): UserPayload!
   findAllPosts: [PostPayload!]!
   findOnePost(id: ID!): PostPayload!
+  getCurrentUser: UserWithoutPostsPayload!
 }
 
 type Mutation {
-  createUser(CreateUserInput: CreateUserInput!): UserPayload!
+  updateUser(id: ID!, updateUserInput: UpdateUserInput!): UserPayload!
   removeUser(id: ID!): UserPayload!
   createPost(createPostInput: CreatePostInput!): PostPayload!
+  updatePost(updatePostInput: UpdatePostInput!, id: ID!): PostPayload!
   removePost(id: ID!): PostPayload!
+  signUp(signUpInput: SignUpInput!): SignUpPayload!
+  signIn(signInInput: SignInInput!): SignInPayload!
 }
 
-input CreateUserInput {
-  fullName: String!
-  email: String!
+input UpdateUserInput {
+  fullName: String
+  email: String
+  password: String
 }
 
 input CreatePostInput {
   title: String!
   desc: String!
+}
+
+input UpdatePostInput {
+  title: String
+  desc: String
+}
+
+input SignUpInput {
+  fullName: String!
+  email: String!
+  password: String!
+}
+
+input SignInInput {
+  email: String!
+  password: String!
 }
