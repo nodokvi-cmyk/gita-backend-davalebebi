@@ -3,15 +3,27 @@ import { PostsService } from './posts.service.js';
 import { CreatePostInput } from './dto/create-post.input.js';
 import { UpdatePostInput } from './dto/update-post.input.js';
 import { PostPayload } from './payload/post.payload.js';
-import { UseGuards } from '@nestjs/common';
+import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { UserId } from '../users/decorators/user-id.decorator.js';
 import { ValidMongoId } from '../shared/dto/valid-mongodb-id.inputs.js';
+import { IsAuthGuard } from '../shared/guards/isAuth.guard.js';
 
 @Resolver('Post')
 export class PostsResolver {
   constructor(private readonly postsService: PostsService) {}
+  
+  @Query(() => [PostPayload])
+  findAllPosts() {
+    return this.postsService.findAll();
+  }
+  
+  @Query(() => PostPayload)
+  findOnePost(@Args() {id}: ValidMongoId) {
+    return this.postsService.findOne(id);
+  }
 
   @Mutation(() => PostPayload)
+  @UseGuards(IsAuthGuard)
   createPost(
     @UserId() userId: string,
     @Args('createPostInput') createPostInput: CreatePostInput
@@ -19,23 +31,22 @@ export class PostsResolver {
     return this.postsService.createPost(createPostInput, userId);
   }
 
-  @Query(() => [PostPayload])
-  findAllPosts() {
-    return this.postsService.findAll();
+  @Mutation(() => PostPayload)
+  @UseGuards(IsAuthGuard)
+  updatePost(
+    @UserId() userId: string,
+    @Args('updatePostInput') updatePostInput: UpdatePostInput,
+    @Args() {id}: ValidMongoId
+  ) {
+    return this.postsService.update(id, updatePostInput, userId);
   }
-
-  @Query(() => PostPayload)
-  findOnePost(@Args() {id}: ValidMongoId) {
-  return this.postsService.findOne(id);
-  }
-
-  // @Mutation('updatePost')
-  // update(@Args('updatePostInput') updatePostInput: UpdatePostInput) {
-  //   return this.postsService.update(updatePostInput.id, updatePostInput);
-  // }
 
   @Mutation(() => PostPayload)
-  removePost(@Args() {id}: ValidMongoId) {
-    return this.postsService.remove(id);
+  @UseGuards(IsAuthGuard)
+  removePost(
+    @UserId() userId: string,
+    @Args() {id}: ValidMongoId
+  ) {
+    return this.postsService.remove(id, userId);
   }
 }

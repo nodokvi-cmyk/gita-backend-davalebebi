@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema.js';
 import { Model } from 'mongoose';
 import { Post } from '../posts/schema/post.schema.js';
+import { UpdateUserInput } from './dto/update-user.input.js';
+import * as bcrypt from "bcrypt"
 
 @Injectable()
 export class UsersService {
@@ -15,13 +17,33 @@ export class UsersService {
         return this.usersModel.find().populate({path: "posts", select: "-author"})
     }
 
-    // async createUser(createUserInput: CreateUserInput){
-    //     const existingUser = await this.usersModel.findOne({email: createUserInput.email})
-    //     if(existingUser) throw new BadRequestException("This email is already used")
+    async getOne(id: string){
+        const user = await this.usersModel.findById(id).populate({path: "posts", select: "-author"})
+        if(!user) throw new NotFoundException("User not found")
 
-    //     const newUser = await this.usersModel.create(createUserInput)
-    //     return newUser
-    // }
+        return user
+    }
+
+    async updateUser(userId: string, updateUserInput: UpdateUserInput){
+        const existingUser = await this.usersModel.findById(userId)
+        if(!existingUser) throw new NotFoundException("User not found")
+
+        if(updateUserInput.email && updateUserInput.email !== existingUser.email){
+            const emailAlreadyUser = await this.usersModel.findOne({email: updateUserInput.email})
+            if(emailAlreadyUser) throw new BadRequestException("Email already used")
+        }
+
+        if(updateUserInput.password) {
+            updateUserInput.password = await bcrypt.hash(updateUserInput.password, 10)
+        }
+        
+        const updatedUser = await this.usersModel.findByIdAndUpdate(userId, {
+            ...updateUserInput,
+            $inc: {__v: 1}
+        }, {new: true}).populate({path: "posts", select: "-author"})
+
+        return updatedUser
+    }
 
     async removeUser(userId: string){
         const user = await this.usersModel.findById(userId)
